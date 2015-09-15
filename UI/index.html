@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>CS 7470 MUC Project1</title>
+	<link rel="shortcut icon" href="images/title-icon.ico" />
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/business-frontpage.css" rel="stylesheet">
+	<link href="css/colorbox.css" rel="stylesheet">
+ 
+</head>
+
+<body>
+<style>
+audio { width: 500px; display: block;}
+
+</style>
+<script type="text/javascript" src="js/socket.io.min.js"></script>
+<script src="js/jquery.js"></script>
+<script src="js/jquery.newsTicker.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.colorbox.js"></script>
+<script type="text/javascript" charset="utf-8">
+songs=['Stairway To Heaven (Led Zeppelin)', 'Smells Like Teens Spirit (Nirvana)', 'Hey Jude (The Beatles)', 'Tangled Up In Blue (Bob Dylan)', 'Gimme Shelter (Rolling Stones)','Another Brick In The Wall 2 (Pink Floyd)', 'Dream On (Aerosmith)'];
+songUrls=[
+			'<source src="songs/Stairway To Heaven.mp3" type="audio/mpeg">',
+			'<source src="songs/Smells Like Teens Spirit.mp3" type="audio/mpeg">',
+			'<source src="songs/Hey Jude.mp3" type="audio/mpeg">',
+			'<source src="songs/Tangled Up In Blue.mp3" type="audio/mpeg">',
+			'<source src="songs/Gimme Shelter.mp3" type="audio/mpeg">',
+			'<source src="songs/Another Brick In The Wall 2.mp3" type="audio/mpeg">',
+			'<source src="songs/Dream On.mp3" type="audio/mpeg">'
+		]
+current=0;
+command="";
+var lastTime, currTime;
+
+function volUp(){
+	vol=document.getElementById("currentTrack");
+	if(vol.volume<1)
+		if(vol.volume>0.8)
+			vol.volume=1;
+		else
+			vol.volume+=0.2
+	//console.log(vol.volume);
+}
+
+
+function volDown(){
+	console.log('volDown');
+	vol=document.getElementById("currentTrack");
+	if(vol.volume>0)
+		if(vol.volume<0.2)
+			vol.volume=0;
+		else
+			vol.volume-=0.2
+	//console.log(vol.volume);
+}
+
+var playing = true;
+
+function togglePlay()
+{
+	if(playing) {ctrl('pause');statusText.innerHTML="<p><b>Paused</b></p>";}
+	else {ctrl('play');statusText.innerHTML="<p><b>Play</b></p>";}
+}
+
+function ctrl(type){
+	song=document.getElementById("currentTrack");
+	if(type=='play')
+	{
+		song.play();
+		playing = true;
+	}
+	else
+		if(type=='pause') { song.pause(); playing = false;}
+		else if(type=='stop'){ song.pause();song.currentTime = 0; playing = false;}
+}
+
+function trackChange(type){
+	var lastTrack=current;
+	if(type=='prev'){
+		if(current==0) current=songs.length-1;
+		else current--;
+		playing = true;
+	}
+	else if(type=='next'){
+		if(current==songs.length-1) current=0;
+		else current++;
+		playing = true;
+	}
+	
+	document.getElementById("li"+lastTrack).style.backgroundColor = "white";
+	document.getElementById("li"+current).style.backgroundColor = "yellow";
+	document.getElementById("currentTrackName").innerHTML="<b>"+songs[current]+"</b>";
+	document.getElementById("currentTrack").innerHTML=songUrls[current];
+	document.getElementById("currentTrack").load();
+}
+
+$(document).ready(function() {
+  /*
+	$.ajax({
+		url: 'http://127.0.0.1:5000/',
+		dataType: 'json',
+		success: searchCallback
+	});
+	*/
+	var d = new Date();
+	lastTime = d.getTime();
+	//currTime = lastTime + 501;
+	document.getElementById("li"+current).style.backgroundColor = "yellow";
+	//if(currTime - lastTime > 500){
+	lastTime = currTime;
+		
+	//}
+});
+
+function makeRequest(){
+	//console.log('makeReq: '+c);
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', 'http://127.0.0.1:5000/');
+	xhr.onreadystatechange = function () {
+	  if (this.status == 200 && this.readyState == 4) {
+		command = this.responseText;
+		executeCommand(command);
+		//console.log('response: ' + this.responseText);
+	  }
+	};
+	xhr.send();
+}
+
+window.setInterval(function(){  makeRequest();}, 200);
+
+var c=0;
+var start = false;
+var delayedFunction;
+var prevCmd = '';
+function executeCommand(cmd){
+
+	statusText=document.getElementById("status");
+
+	if(cmd=='') {}
+	else{
+		console.log(cmd);
+		var d = new Date();
+		var currTime = d.getTime();
+
+	       	if(cmd=='N')
+		{
+			
+			if(currTime - lastTime < 1000 && prevCmd == cmd)
+			{
+				clearTimeout(delayedFunction);
+				start = !start;
+				var en='';
+				if(start) en='Enabled';
+				else en='Disabled';
+				statusText.innerHTML="<p><b>"+en+"</b></p>";
+			}
+			else if(start) delayedFunction = setTimeout(function(){togglePlay();}, 1000);
+		}
+		else if(cmd=='T' && start)
+		{
+			if(currTime - lastTime < 1000 && prevCmd == cmd)
+			{
+				volDown();
+				trackChange('next');
+				statusText.innerHTML="<p><b>Next Track</b></p>";
+
+			}
+			else {volUp();statusText.innerHTML="<p><b>Increasing Volume</b></p>";}
+		}
+		else if(cmd=='V' && start)
+		{
+			if(currTime - lastTime < 1000 && prevCmd == cmd)
+			{
+				volUp();
+				trackChange('prev');
+				statusText.innerHTML="<p><b>Previous Track</b></p>";
+			}
+			else {volDown();statusText.innerHTML="<p><b>Decreasing Volume</b></p>";}
+		}
+
+	/*if(cmd=='trial'){
+		console.log('execute');	
+		c++;
+		
+		volDown();
+		//volUp();
+	}*/
+		lastTime = currTime;
+		prevCmd = cmd;
+	}
+
+}
+/*
+function searchCallback(data) {
+	console.log("success");
+	console.log(data);
+}
+*/
+</script>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#"><b>Acoustic Gesture Recognition</b></a>
+				<a class="navbar-brand" href="#"></a>
+				<a class="navbar-brand" href="#" style="margin-left:600px;">- Siddharth, Jay, Kareem<b></b></a>
+            </div>
+        </div>
+    </nav>
+	
+<div class="container">
+
+	<div class="row">	
+		<div class="col-md-8">			
+			<div class="row">
+				<div class="col-sm-10">
+					<br/><br/><br/>
+					<h4><b>Now Playing</b></h2>
+					<br/><br/><br/>
+					<p id="currentTrackName"><b>Stairway To Heaven (Led Zeppelin)</b></p><br/>
+					<div class="songDiv" id="currSong">
+						<audio id="currentTrack" controls autoplay width="400px">
+							<source src="songs/Stairway To Heaven.mp3" type="audio/mpeg">						
+						</audio>
+					</div>
+				</div>				
+			</div>
+			<br/>
+
+			<div class="row" id="status" style="margin-left:2px">  				
+					<p><b>None...</b></p>
+			</div>
+			<div class="row" id="legend">
+				<div class="col-sm-10">
+					<img src="images/Legend.png"  width="700px"></img>
+				</div>
+			</div>
+			<div style="visibility:hidden">
+				<div class="row">
+					<div class="col-sm-10">
+						<button onclick="ctrl('play')">Play</button>
+						<button onclick="ctrl('pause')">Pause</button>
+						<button onclick="ctrl('stop')">Stop</button>
+					</div>
+				</div>	
+				<br/>
+				<div class="row">
+					<div class="col-sm-10">
+						<button onclick="volUp()">Volume Up</button>
+						<button onclick="volDown()">Volume Down</button>
+					</div>
+				</div>		
+				<br/>
+				<div class="row">
+					<div class="col-sm-10">
+						<button onclick="trackChange('prev')">Prev Track</button>
+						<button onclick="trackChange('next')">Next Track</button>
+					</div>
+				</div>	
+				<br/><br/>
+				
+			</div>	
+			
+		</div>       
+		
+		<div class="col-md-4">
+			<div class="row">
+				<div class="col-sm-12">
+					<h3>Playlist</h3>
+					<hr />
+					<div id="list">
+					    <ul>
+		                    <li id="li0"><a href="songs/Stairway To Heaven.mp3">Stairway To Heaven</a></li><hr />
+							<li id="li1"><a href="songs/Smells Like Teens Spirit.mp3">Smells Like Teens Spirit</a></li><hr />
+							<li id="li2"><a href="songs/Hey Jude.mp3">Hey Jude</a></li><hr />
+							<li id="li3"><a href="songs/Tangled Up In Blue.mp3">Tangled Up In Blue</a></li><hr />
+							<li id="li4"><a href="songs/Gimme Shelter.mp3">Gimme Shelter</a></li><hr />		                    
+		                    <li id="li5"><a href="songs/Another Brick In The Wall 2.mp3">Another Brick In The Wall 2</a></li><hr />	
+							<li id="li6"><a href="songs/Dream On.mp3">Dream On</a></li><hr />	
+		                </ul>
+		            </div>   		            
+					<br/><br/><br/>
+				</div>				
+			</div>			
+		</div>
+		
+	</div>	
+	<hr>
+	<footer>
+            <div class="row" style="visibility:hidden">
+                <div class="col-lg-12">
+                    <h7>Copyright &copy; <a href="#">Siddharth, Jay, Kareem</a> 2015</h7>
+                </div>
+            </div>
+            <!-- /.row -->
+        </footer>
+
+</div>
+    <!-- /.container -->
+	<br/><br/>
+        
+
+        <!-- Footer -->
+        
+    <!-- jQuery -->
+
+	
+	
+	
+</body>
+
+</html>

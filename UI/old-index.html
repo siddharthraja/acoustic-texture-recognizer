@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>CS 7470 MUC Project1</title>
+	<link rel="shortcut icon" href="images/title-icon.ico" />
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/business-frontpage.css" rel="stylesheet">
+	<link href="css/colorbox.css" rel="stylesheet">
+ 
+</head>
+
+<body>
+<script type="text/javascript" src="js/socket.io.min.js"></script>
+<script src="js/jquery.js"></script>
+<script src="js/jquery.newsTicker.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.colorbox.js"></script>
+<script type="text/javascript" charset="utf-8">
+songs=['Stairway To Heaven (Led Zeppelin)', 'Smells Like Teens Spirit (Nirvana)', 'Hey Jude (The Beatles)', 'Tangled Up In Blue (Bob Dylan)', 'Gimme Shelter (Rolling Stones)'];
+songUrls=[
+			'<source src="songs/Stairway To Heaven.mp3" type="audio/mpeg">',
+			'<source src="songs/Smells Like Teens Spirit.mp3" type="audio/mpeg">',
+			'<source src="songs/Hey Jude.mp3" type="audio/mpeg">',
+			'<source src="songs/Tangled Up In Blue.mp3" type="audio/mpeg">',
+			'<source src="songs/Gimme Shelter.mp3" type="audio/mpeg">',
+		]
+current=0;
+command="";
+var lastTime, currTime;
+
+function volUp(){
+	vol=document.getElementById("currentTrack");
+	if(vol.volume<1)
+		if(vol.volume>0.9)
+			vol.volume=1;
+		else
+			vol.volume+=0.1
+	//console.log(vol.volume);
+}
+
+
+function volDown(){
+	console.log('volDown');
+	vol=document.getElementById("currentTrack");
+	if(vol.volume>0)
+		if(vol.volume<0.1)
+			vol.volume=0;
+		else
+			vol.volume-=0.1
+	//console.log(vol.volume);
+}
+
+function ctrl(type){
+	song=document.getElementById("currentTrack");
+	if(type=='play')	song.play();
+	else
+		if(type=='pause') song.pause();
+		else if(type=='stop'){ song.pause();song.currentTime = 0;}
+}
+
+function trackChange(type){
+	if(type=='prev'){
+		if(current==0) current=songs.length-1;
+		else current--;
+	}
+	else if(type=='next'){
+		if(current==songs.length-1) current=0;
+		else current++;
+	}
+	
+	document.getElementById("currentTrackName").innerHTML=songs[current];
+	document.getElementById("currentTrack").innerHTML=songUrls[current];
+	document.getElementById("currentTrack").load();
+}
+
+$(document).ready(function() {
+  /*
+	$.ajax({
+		url: 'http://127.0.0.1:5000/',
+		dataType: 'json',
+		success: searchCallback
+	});
+	*/
+	var d = new Date();
+	lastTime = d.getTime();
+	currTime = lastTime + 501;
+	
+	//if(currTime - lastTime > 500){
+	lastTime = currTime;
+		
+	//}
+});
+
+var c=0;
+function makeRequest(){
+	console.log('makeReq: '+c);
+	var xhr = new XMLHttpRequest();
+	c++;
+	url='';
+	if(c%2==0)
+		url = 'http://127.0.0.1:5000/';
+	else
+		url = 'http://127.0.0.1:5000/1';
+	console.log(url);
+	xhr.open('GET', url);
+	xhr.onreadystatechange = function () {
+	  if (this.status == 200 && this.readyState == 4) {
+		command = this.responseText;
+		executeCommand(command);
+		console.log('response: ' + this.responseText);
+	  }
+	};
+	xhr.send();
+}
+
+window.setInterval(function(){  makeRequest();}, 1500);
+
+function executeCommand(cmd){
+	if(cmd=='voldown'){
+		console.log('execute');	
+		volDown();
+	}
+	if(cmd=='volup'){
+		console.log('execute');	
+		volUp();
+	}
+	var d = new Date();
+	currTime = d.getTime();
+
+}
+/*
+function searchCallback(data) {
+	console.log("success");
+	console.log(data);
+}
+*/
+</script>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#"><b>Acoustic Gesture Recognition</b></a>
+				<a class="navbar-brand" href="#"></a>
+				<a class="navbar-brand" href="#" style="margin-left:600px;">- Siddharth, Jay, Kareem<b></b></a>
+            </div>
+        </div>
+    </nav>
+	
+<div class="container">
+
+	<div class="row">	
+		<div class="col-md-8">			
+			<div class="row">
+				<div class="col-sm-10">
+					<br/><br/><br/>
+					<h4><b>Now Playing</b></h2>
+					<br/>
+					<p id="currentTrackName">Stairway To Heaven (Led Zeppelin)</p>
+					<div class="songDiv" id="currSong">
+						<audio id="currentTrack" controls width="400px">
+							<source src="songs/Stairway To Heaven.mp3" type="audio/mpeg">						
+						</audio>
+					</div>
+				</div>				
+			</div>
+			<br/>
+			<div class="row">
+				<div class="col-sm-10">
+					<button onclick="ctrl('play')">Play</button>
+					<button onclick="ctrl('pause')">Pause</button>
+					<button onclick="ctrl('stop')">Stop</button>
+				</div>
+			</div>	
+			<br/>
+			<div class="row">
+				<div class="col-sm-10">
+					<button onclick="volUp()">Volume Up</button>
+					<button onclick="volDown()">Volume Down</button>
+				</div>
+			</div>		
+			<br/>
+			<div class="row">
+				<div class="col-sm-10">
+					<button onclick="trackChange('prev')">Prev Track</button>
+					<button onclick="trackChange('next')">Next Track</button>
+				</div>
+			</div>	
+			<br/><br/>
+			<div class="row">
+				<div class="col-sm-10">
+					<button onclick="httpGet()">Request</button>
+				</div>
+			</div>				
+		</div>       
+		
+		<div class="col-md-4">
+			<div class="row">
+				<div class="col-sm-12">
+					<h3>Playlist</h3>
+					<hr />
+					<div id="list">
+					    <ul>
+		                    <li><a href="songs/Stairway To Heaven.mp3">Stairway To Heaven</a></li><hr />
+							<li><a href="songs/Smells Like Teens Spirit.mp3">Smells Like Teens Spirit</a></li><hr />
+							<li><a href="songs/Hey Jude.mp3">Hey Jude</a></li><hr />
+							<li><a href="songs/Tangled Up In Blue.mp3">Tangled Up In Blue</a></li><hr />
+							<li><a href="songs/Gimme Shelter.mp3">Gimme Shelter</a></li><hr />		                    
+		                    
+		                </ul>
+		            </div>   		            
+					<br/><br/><br/>
+				</div>				
+			</div>			
+		</div>
+		
+	</div>	
+	<hr>
+	<footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <h7>Copyright &copy; <a href="#">Siddharth, Jay, Kareem</a> 2015</h7>
+                </div>
+            </div>
+            <!-- /.row -->
+        </footer>
+
+</div>
+    <!-- /.container -->
+	<br/><br/>
+        
+
+        <!-- Footer -->
+        
+    <!-- jQuery -->
+
+	
+	
+	
+</body>
+
+</html>

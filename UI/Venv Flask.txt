@@ -1,0 +1,123 @@
+Microsoft Windows [Version 6.3.9600]
+(c) 2013 Microsoft Corporation. All rights reserved.
+
+C:\Users\Sid>d:
+
+D:\>cd "My Doc"
+
+D:\My Doc>cd "SEMESTER 1"
+
+D:\My Doc\SEMESTER 1>cd..
+
+D:\My Doc>cd "SEMESTER 2"
+
+D:\My Doc\SEMESTER 2>cd "CS 7470 Ubicomp"
+
+D:\My Doc\SEMESTER 2\CS 7470 Ubicomp>cd Project
+
+D:\My Doc\SEMESTER 2\CS 7470 Ubicomp\Project>virtualenv venv
+New python executable in venv\Scripts\python.exe
+Installing setuptools, pip...done.
+
+D:\My Doc\SEMESTER 2\CS 7470 Ubicomp\Project>venv\scripts\activate
+(venv) D:\My Doc\SEMESTER 2\CS 7470 Ubicomp\Project>pip intall Flask
+ERROR: unknown command "intall" - maybe you meant "install"
+
+(venv) D:\My Doc\SEMESTER 2\CS 7470 Ubicomp\Project>pip install Flask
+Collecting Flask
+  Downloading Flask-0.10.1.tar.gz (544kB)
+    100% |################################| 544kB 435kB/s
+Collecting Werkzeug>=0.7 (from Flask)
+  Downloading Werkzeug-0.10.1.tar.gz (1.1MB)
+    100% |################################| 1.1MB 137kB/s
+Collecting Jinja2>=2.4 (from Flask)
+  Downloading Jinja2-2.7.3.tar.gz (378kB)
+    100% |################################| 380kB 518kB/s
+Collecting itsdangerous>=0.21 (from Flask)
+  Downloading itsdangerous-0.24.tar.gz (46kB)
+    100% |################################| 49kB 2.7MB/s
+Collecting markupsafe (from Jinja2>=2.4->Flask)
+  Downloading MarkupSafe-0.23.tar.gz
+Installing collected packages: markupsafe, itsdangerous, Jinja2, Werkzeug, Flask
+
+  Running setup.py install for markupsafe
+    building 'markupsafe._speedups' extension
+    ==========================================================================
+    WARNING: The C extension could not be compiled, speedups are not enabled.
+    Failure information, if any, is above.
+    Retrying the build without the C extension now.
+    ==========================================================================
+    WARNING: The C extension could not be compiled, speedups are not enabled.
+    Plain-Python installation succeeded.
+    ==========================================================================
+  Running setup.py install for itsdangerous
+  Running setup.py install for Jinja2
+  Running setup.py install for Werkzeug
+  Running setup.py install for Flask
+Successfully installed Flask-0.10.1 Jinja2-2.7.3 Werkzeug-0.10.1 itsdangerous-0.
+24 markupsafe-0.23
+
+(venv) D:\My Doc\SEMESTER 2\CS 7470 Ubicomp\Project>python hello.py
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+127.0.0.1 - - [11/Mar/2015 01:13:10] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Mar/2015 01:13:10] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [11/Mar/2015 01:20:39] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Mar/2015 01:20:39] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [11/Mar/2015 02:12:50] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Mar/2015 02:13:43] "OPTIONS / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Mar/2015 02:16:41] "OPTIONS / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Mar/2015 02:16:55] "OPTIONS / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Mar/2015 02:19:30] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Mar/2015 02:19:35] "GET /hello HTTP/1.1" 404 -
+127.0.0.1 - - [11/Mar/2015 02:20:44] "GET / HTTP/1.1" 200 -
+
+(venv) D:\My Doc\SEMESTER 2\CS 7470 Ubicomp\Project>^Z
+(venv) D:\My Doc\SEMESTER 2\CS 7470 Ubicomp\Project>python hello.py
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+127.0.0.1 - - [11/Mar/2015 02:21:16] "GET / HTTP/1.1" 200 -
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 54908)
+Traceback (most recent call last):
+  File "C:\Python27\Lib\SocketServer.py", line 295, in _handle_request_noblock
+    self.process_request(request, client_address)
+  File "C:\Python27\Lib\SocketServer.py", line 321, in process_request
+    self.finish_request(request, client_address)
+  File "C:\Python27\Lib\SocketServer.py", line 334, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Python27\Lib\SocketServer.py", line 655, in __init__
+    self.handle()
+  File "D:\My Doc\SEMESTER 2\CS 7470 Ubicomp\Project\venv\lib\site-packages\werk
+zeug\serving.py", line 203, in handle
+    rv = BaseHTTPRequestHandler.handle(self)
+  File "C:\Python27\Lib\BaseHTTPServer.py", line 340, in handle
+    self.handle_one_request()
+  File "D:\My Doc\SEMESTER 2\CS 7470 Ubicomp\Project\venv\lib\site-packages\werk
+zeug\serving.py", line 234, in handle_one_request
+    self.raw_requestline = self.rfile.readline()
+  File "C:\Python27\Lib\socket.py", line 447, in readline
+    data = self._sock.recv(self._rbufsize)
+KeyboardInterrupt
+----------------------------------------
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 54909)
+Traceback (most recent call last):
+  File "C:\Python27\Lib\SocketServer.py", line 295, in _handle_request_noblock
+    self.process_request(request, client_address)
+  File "C:\Python27\Lib\SocketServer.py", line 321, in process_request
+    self.finish_request(request, client_address)
+  File "C:\Python27\Lib\SocketServer.py", line 334, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Python27\Lib\SocketServer.py", line 655, in __init__
+    self.handle()
+  File "D:\My Doc\SEMESTER 2\CS 7470 Ubicomp\Project\venv\lib\site-packages\werk
+zeug\serving.py", line 203, in handle
+    rv = BaseHTTPRequestHandler.handle(self)
+  File "C:\Python27\Lib\BaseHTTPServer.py", line 340, in handle
+    self.handle_one_request()
+  File "D:\My Doc\SEMESTER 2\CS 7470 Ubicomp\Project\venv\lib\site-packages\werk
+zeug\serving.py", line 234, in handle_one_request
+    self.raw_requestline = self.rfile.readline()
+  File "C:\Python27\Lib\socket.py", line 447, in readline
+    data = self._sock.recv(self._rbufsize)
+KeyboardInterrupt
+----------------------------------------
